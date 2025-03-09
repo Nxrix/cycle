@@ -353,7 +353,7 @@ const theme = () => {
   document.body.style.filter = (invert?"invert(100%)":"invert(0%)")+" hue-rotate("+(rnd.gen()*360+hue_offset+invert*180)+"deg)";
 }
 
-const storage = new Storage("nxrix","cycle");
+const storage = new Storage("nxrix","game_cycle");
 let unlock = (-1-lvls.length);
 let invert;
 let tm = +unlock+1;
