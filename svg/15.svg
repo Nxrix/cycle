@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="128"
+   height="128"
+   viewBox="0 0 33.866667 33.866667"
+   version="1.1"
+   id="svg5"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <g
+     id="layer1"
+     clip-path="none"
+     mask="none">
+    <path
+       id="path5151"
+       style="fill:#8950f7;fill-rule:evenodd;stroke-width:0;stroke-linecap:square;paint-order:stroke fill markers"
+       d="M 8.4666667,0 A 8.4666662,8.4666662 0 0 1 0,8.4666667 V 12.7 A 12.7,12.7 0 0 0 12.7,0 Z" />
+    <path
+       id="path5153"
+       style="fill:#8950f7;fill-rule:evenodd;stroke-width:0;stroke-linecap:square;paint-order:stroke fill markers"
+       d="m 21.166667,0 a 12.7,12.7 0 0 0 12.7,12.7 V 8.4666667 A 8.4666662,8.4666662 0 0 1 25.4,0 Z" />
+    <path
+       id="path5155"
+       style="fill:#8950f7;fill-rule:evenodd;stroke-width:0;stroke-linecap:square;paint-order:stroke fill markers"
+       d="m 33.866667,21.166667 a 12.7,12.7 0 0 0 -12.7,12.7 H 25.4 A 8.4666662,8.4666662 0 0 1 33.866667,25.4 Z" />
+    <path
+       id="path5157"
+       style="fill:#8950f7;fill-rule:evenodd;stroke-width:0;stroke-linecap:square;paint-order:stroke fill markers"
+       d="M 0,21.166667 V 25.4 a 8.4666662,8.4666662 0 0 1 8.4666667,8.466667 H 12.7 a 12.7,12.7 0 0 0 -12.7,-12.7 z" />
+  </g>
+</svg>
