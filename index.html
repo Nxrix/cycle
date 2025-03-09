@@ -365,6 +365,7 @@ window.onload = async () => {
   let u;
   try {
     u = await storage.get("unlock");
+    u = parseInt(u);
   } catch (err) {
     u = "";
   }
