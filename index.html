@@ -8,11 +8,11 @@
 <style>
 @font-face {
   font-family: "en";
-  src: url("https://nxrix.github.io/assets/fonts/regular.woff2");
+  src: url("/assets/fonts/regular.woff2");
 }
 @font-face {
   font-family: "fa";
-  src: url("https://nxrix.github.io/assets/fonts/estedad.woff2");
+  src: url("/assets/fonts/estedad.woff2");
 }
 * {
   font-family: "en","fa";
@@ -30,15 +30,15 @@ html {
   width: 100%;
   height: 100%;
   background-color: #000;
-  background-image: url("https://nxrix.github.io/assets/img/text/nxrix-text-0.png");
+  background-image: url("/assets/img/text/nxrix-text-0.png");
   image-rendering: pixelated;
   background-repeat: no-repeat;
   background-size: 60%;
   background-position: center center;
 }
 body {
-  width: 100vw;
-  height: 100%;
+  width: var(--vw);
+  height: var(--vh);
   margin: 0;
   overflow: auto;
   opacity: 0;
@@ -46,8 +46,8 @@ body {
   background: linear-gradient(0deg, rgba(175,170,255,1) 0%, rgba(222,221,255,1) 100%);
 }
 .main {
-  width: 100vw;
-  height: 100vh;
+  width: var(--vw);
+  height: var(--vh);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -107,7 +107,7 @@ body {
 </style>
 <body>
   <div class="main">
-    <img id="h" src="https://nxrix.github.io/assets/img/svg/heart-0.svg" onclick="theme()">
+    <img id="h" src="/assets/img/svg/heart-0.svg" onclick="theme()">
     <!--div id="h1" onclick="theme()">Nxrix<img src="h1.svg" style="width:12px;margin-left:4px"></div-->
     <div id="grid"></div>
     <div id="lvl"></div>
@@ -116,6 +116,7 @@ body {
   </div>
   <!--div class="other">Nxrix</div-->
 </body>
+<script src="/assets/js/screen.js"></script>
 <script src="./tiles.js"></script>
 <script>
 
