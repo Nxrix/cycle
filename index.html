@@ -362,7 +362,12 @@ let dev = 0;
 let hue_offset = 200;
 window.onload = async () => {
   await storage.init();
-  const u = await storage.get("unlock");
+  let u;
+  try {
+    u = await storage.get("unlock");
+  } catch (err) {
+    u = "";
+  }
   unlock = u||(-1-lvls.length);
   next();
   document.body.style.opacity = "1";
