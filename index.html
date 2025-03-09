@@ -355,7 +355,7 @@ const theme = () => {
 
 const storage = new Storage("nxrix","cycle");
 let unlock = (-1-lvls.length);
-let invert = +storage.get("invert");
+let invert;
 let tm = +unlock+1;
 let locked = false;
 let dev = 0;
@@ -368,6 +368,13 @@ window.onload = async () => {
   } catch (err) {
     u = "";
   }
+  let i;
+  try {
+    i = await storage.get("invert");
+  } catch (err) {
+    i = 0;
+  }
+  invert = +i;
   unlock = u||(-1-lvls.length);
   next();
   document.body.style.opacity = "1";
