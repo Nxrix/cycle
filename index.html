@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cycle ⌘</title>
+</head>
+<style>
+@font-face {
+  font-family: "en";
+  src: url("https://nxrix.github.io/assets/fonts/regular.woff2");
+}
+@font-face {
+  font-family: "fa";
+  src: url("https://nxrix.github.io/assets/fonts/estedad.woff2");
+}
+* {
+  font-family: "en","fa";
+  text-align: auto !important;
+  unicode-bidi: plaintext !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  color: #8950f7;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  background-image: url("https://nxrix.github.io/assets/img/text/nxrix-text-0.png");
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+  background-size: 60%;
+  background-position: center center;
+}
+body {
+  width: 100vw;
+  height: 100%;
+  margin: 0;
+  overflow: auto;
+  opacity: 0;
+  transition: filter 1s ease, opacity 2s cubic-bezier(0.75,0,0,1);
+  background: linear-gradient(0deg, rgba(175,170,255,1) 0%, rgba(222,221,255,1) 100%);
+}
+.main {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+.other {
+  width: calc(100vw - 10vmin);
+  padding: 5vmin;
+}
+#grid {
+  display: grid;
+  width: 60vmin;
+  transition: opacity 0.125s ease;
+  opacity: 0;
+}
+#grid img {
+  width:  100%;
+  height: 100%;
+  cursor: pointer;
+  transition: transform 0.125s ease;
+  image-rendering: pixelated;
+}
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 12vmin;
+  height: 12vmin;
+  font-size: 8vmin;
+  position: absolute;
+  bottom: 6vmin;
+}
+.bp {
+  left: 8vmin;
+}
+.bn {
+  right: 8vmin;
+}
+#lvl {
+  font-size: 6vmin;
+  position: absolute;
+  bottom: 8vmin;
+}
+#h {
+  position: absolute;
+  top: 8vmin;
+  width: 3vmin;
+  padding: 1vmin;
+}
+#h1 {
+  font-family: mono;
+  position: absolute;
+  top: 8vmin;
+  text-align: center;
+}
+</style>
+<body>
+  <div class="main">
+    <img id="h" src="https://nxrix.github.io/assets/img/svg/heart-0.svg" onclick="theme()">
+    <!--div id="h1" onclick="theme()">Nxrix<img src="h1.svg" style="width:12px;margin-left:4px"></div-->
+    <div id="grid"></div>
+    <div id="lvl"></div>
+    <div class="btn bp" onclick="if (tm>(-lvls.length)||dev){tm--;next();}"><</div>
+    <div class="btn bn" onclick="if (unlock>tm-1||dev){tm++;next();}">></div>
+  </div>
+  <!--div class="other">Nxrix</div-->
+</body>
+<script src="./tiles.js"></script>
+<script>
+
+const grid = document.getElementById("grid");
+
+const randomize = () => {
+  for (let i=0;i<h;i++) {
+    for (let j=0;j<w;j++) {
+      const r = Math.floor(Math.random()*3);
+      grid.children[j+i*w].style.transform = "rotateZ("+r*-90+"deg)";
+      shift_tile(i,j,r);
+    }
+  }
+  if (tiles_connected()) randomize();
+}
+
+function conv(n) {
+  return n.toString(2).padStart(4,"0").split("").map(Number);
+}
+
+/*
+`3a91002b8
+ 7ad500050
+ 4046a82e8`
+*/
+
+const lvls = [
+  {
+    s: `00000000
+        03a93a90
+        0506c050
+        05000050
+        069003c0
+        29693c38
+        0696c3c0
+        02eaae80`
+  },
+  {
+    s: `3b93a83a9101
+        5557a8505515
+        4446a86ac6ec`
+  },
+  {
+    s: `0001000
+        02bd010
+        007ebd0
+        2bd07e8
+        07ebd00
+        0407e80
+        0004000`
+  }
+];
+
+const fixn = (n) => {
+  const f = [
+    [1,8],
+    [2,4],
+    [5,10],
+    [3,12],
+    [7,14],
+    [11,13]
+  ];
+  for (i in f) {
+    if (n==f[i][0]) {
+      return f[i][1];
+    } else if (n==f[i][1]) {
+      return f[i][0]
+    }
+  }
+  return n;
+}
+
+for (i in lvls) {
+  if (lvls[i].s) {
+    lvls[i].d = [];
+    const lines = lvls[i].s.replaceAll(" ","").split("\n");
+    const w = lines[0].length;
+    const h = lines.length;
+    lvls[i].w = w;
+    lvls[i].h = h;
+    for (let x=0;x<w;x++) {
+      for (let y=0;y<h;y++) {
+        lvls[i].d[x+y*w] = parseInt(lines[y][x],16);
+      }
+    }
+  }
+}
+
+next = () => {
+  grid.style.opacity="0";
+  const rnd = new srnd(tm*tm*tm*tm+33);
+  const inv = Math.round(rnd.gen())==0;
+  document.body.style.filter = (invert?"invert(100%)":"invert(0%)")+" hue-rotate("+(rnd.gen()*361+hue_offset+invert*180)+"deg)";  
+  setTimeout(() => {
+    if (tm>-1) {
+      const wh1 = [
+        [6, 6,[0.3]],
+        [7, 7,[0.3,0.5]],
+        [8, 8,[0.3,0.5]],
+        [9, 9,[0.3,0.5]]
+      ];
+      const wh2 = [
+        [6, 7,[0.3,0.5]],
+        [6, 8,[0.3,0.5]],
+        [6, 9,[0.3,0.5]],
+        [7, 8,[0.3,0.5]],
+        [8, 9,[0.3,0.5]],
+        [6,12,[0.5,0.7]],
+        [6,13,[0.5,0.7]]
+      ];
+      let r;
+      if (Math.floor(rnd.gen()*2)==0) {
+        [w,h,r] = wh1[Math.floor(rnd.gen()*4)];
+      } else {
+        [w,h,r] = wh2[Math.floor(rnd.gen()*7)];
+      }
+      const p = r[Math.floor(rnd.gen()*3)%r.length];
+      grid.style.gridTemplateColumns = `repeat(${w},auto)`;
+      grid.style.gridTemplateRows = `repeat(${h},auto)`;
+      grid.style.width = "min("+80+"vmin,"+60*w/h+"vh)";
+      grid.innerHTML = "";
+      tiles = [];
+      for (let i=0;i<h;i++) {
+        for (let j=0;j<w;j++) {
+          const tile = document.createElement("img");
+          tile.setAttribute("onclick",`if (!locked) {shift_tile_r(${i},${j},3);this.style.transform = "rotateZ("+(this.style.transform.slice(8).slice(0,-4)/90+1)*90+"deg)";}`);
+          tile.setAttribute("draggable",false);
+          grid.appendChild(tile);
+        }
+      }
+      gen_level(w==h?Math.floor(rnd.gen()*3):Math.floor(rnd.gen()*2),tm,p,0.125);
+    } else {
+      tiles = [];
+      w = lvls[tm+lvls.length].w;
+      h = lvls[tm+lvls.length].h;
+      for (let i=0;i<h;i++) {
+        for (let j=0;j<w;j++) {
+          tiles[i+j*h] = conv(fixn(lvls[tm+lvls.length].d[i*w+j]));
+        }
+      }
+      grid.style.gridTemplateColumns = `repeat(${w},auto)`;
+      grid.style.gridTemplateRows = `repeat(${h},auto)`;
+      grid.style.width = "min("+80+"vmin,"+60*w/h+"vh)";
+      grid.innerHTML = "";
+      for (let i=0;i<h;i++) {
+        for (let j=0;j<w;j++) {
+          const tile = document.createElement("img");
+          tile.setAttribute("onclick", `if (!locked) {shift_tile_r(${i},${j},3);this.style.transform = "rotateZ("+(this.style.transform.slice(8).slice(0,-4)/90+1)*90+"deg)";}`);
+          tile.setAttribute("draggable",false);
+          grid.appendChild(tile);
+        }
+      }
+    }
+    update();
+    if (unlock<tm&&!dev) {
+      randomize();
+    };
+    lvl.innerText = tm+lvls.length+1;
+  },125);
+  setTimeout(() => {
+    locked = (tm-1<unlock);
+    grid.style.opacity="1";
+  },250);
+}
+
+function fix() {
+  update();
+  for (let i=0;i<h;i++) {
+    for (let j=0;j<w;j++) {
+      grid.children[j+i*w].style.transform = "";
+    }
+  }
+}
+
+function update() {
+  for (let i=0;i<h;i++) {
+    for (let j=0;j<w;j++) {
+      t = tiles[i+j*h];
+      grid.children[i*w+j].src = `./svg/${t[0]+t[1]*2+t[2]*4+t[3]*8}.svg`;
+    }
+  }
+}
+
+const lose = () => {
+  tm--;
+  if (tm>(-lvls.length)) {
+    unlock=tm-1;
+    localStorage.setItem("unlock",unlock);
+  }
+  next();
+}
+
+const win = () => {
+  tm++;
+  if (tm>(-lvls.length)) {
+    unlock=tm-1;
+    localStorage.setItem("unlock",unlock);
+  }
+  next();
+}
+
+const setL = (n) => {
+  tm=n;
+  if (tm>(-lvls.length)) {
+    unlock=tm-1;
+    localStorage.setItem("unlock",unlock);
+  }
+  next();
+}
+
+function shift_arr(t,n) {
+  const length = t.length;
+  n = n % length; 
+  for (let i = 0; i < n; i++) {
+    const last = t.pop();
+    t.unshift(last);
+  }
+  return t;
+}
+const shift_tile = (x,y,n) => {
+  tiles[x+y*h] = shift_arr(tiles[x+y*h],n);
+}
+const shift_tile_r = (x,y,n) => {
+  tiles[x+y*h] = shift_arr(tiles[x+y*h],n);
+  if(tiles_connected()) win();
+}
+
+const theme = () => {
+  invert = 1-invert;
+  localStorage.setItem("invert",invert);
+  const rnd = new srnd(tm*tm*tm*tm+33);
+  const inv = Math.round(rnd.gen())==0;
+  document.body.style.filter = (invert?"invert(100%)":"invert(0%)")+" hue-rotate("+(rnd.gen()*360+hue_offset+invert*180)+"deg)";
+}
+
+let unlock = localStorage.getItem("unlock")||(-1-lvls.length);
+let invert = +localStorage.getItem("invert");
+let tm = +unlock+1;
+let locked = false;
+let dev = 1;
+let hue_offset = 200;
+next();
+window.onload = () => {
+  document.body.style.opacity = "1";
+}
+
+</script>
+</html>

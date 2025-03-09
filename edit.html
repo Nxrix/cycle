@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiles</title>
+</head>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+input {
+  display: inline-block;
+}
+#brushes {
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+#brushes img {
+  width: 60px;
+}
+#brushes img.sel {
+  box-shadow: 0 0 0 1px #000;
+}
+#grid {
+  display: grid;
+  grid-template-columns: repeat(16, 50px);
+}
+.tile {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  box-shadow: 0 0 0 1px #000;
+}
+</style>
+<body>
+
+<textarea id="input" rows="10" cols="50" placeholder="Enter level data..."></textarea>
+<div id="brushes"></div>
+<button onclick="rotb()">rot</button>
+<div id="grid"></div>
+
+<script>
+bs = [
+  [0],
+  [2,1,8,4],
+  [3,9,12,6],
+  [5,10],
+  [7,11,13,14],
+  [15]
+]
+bx = 0;
+by = -1;
+bc = 0;
+
+const selb = (c,x) => {
+  bc = c;
+  bx = x;
+  const bss = document.querySelectorAll("#brushes img");
+  for (i in bss) {
+    if (i==x) {
+      bss[i].classList.add("sel");
+    } else if (bss[i].classList) {
+      bss[i].classList.remove("sel");
+    }
+  }
+}
+
+const rotb = () => {
+  by++;
+  brushes.innerHTML = "";
+  for (i in bs) {
+    const brush = document.createElement("img");
+    brush.src = "./svg/"+bs[i][by%bs[i].length]+".svg";
+    brush.setAttribute("draggable","false");
+    brush.setAttribute("onclick",`selb(${bs[i][by%bs[i].length]},${i})`);
+    brushes.appendChild(brush);
+  }
+  selb(bs[bx][by%bs[bx].length],bx);
+}
+rotb();
+
+document.addEventListener("keydown",(event) => {
+  if        (event.key==="a"||event.key==="A") {
+    bx = (bx+bs.length-1)%bs.length;
+    selb(bs[bx][by%bs[bx].length],bx);
+  } else if (event.key==="d"||event.key==="D") {
+    bx = (bx+1)%bs.length;
+    selb(bs[bx][by%bs[bx].length],bx);
+  } else if (event.key==="w"||event.key==="W") {
+    rotb();rotb();rotb();
+  } else if (event.key==="s"||event.key==="S") {
+    rotb();
+  }
+});
+
+const setb = (x,y,n) => {
+  let lines = input.value.split("\n");
+  if (lines.length>=y) {
+    const line = lines[y];
+    lines[y] = line.substring(0,x)+n.toString(16)+line.substring(x+1);
+    input.value = lines.join("\n");
+  }
+  //localStorage.setItem("ilmap",input.value);
+  update();
+}
+
+update = () => {
+  const lines = input.value.split("\n");
+  const grid = document.getElementById("grid");
+  grid.innerHTML = '';
+  const height = lines.length;
+  const width = lines[0].length;
+  grid.style.gridTemplateColumns = `repeat(${width}, 50px)`;
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < lines[row].length; col++) {
+      const char = lines[row][col];
+      const hexValue = parseInt(char,16);
+      const cell = document.createElement('div');
+      cell.className = 'tile';
+      cell.setAttribute("onclick",`setb(${col},${row},bc)`);
+      if (!isNaN(hexValue)) {
+        const img = document.createElement('img');
+        img.src = `./svg/${hexValue}.svg`;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.setAttribute("draggable","false");
+        cell.appendChild(img);
+      }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+//input.value = localStorage.getItem("ilmap")||"";
+update();
+input.addEventListener("input",() => {
+  //localStorage.setItem("ilmap",input.value);
+  update();
+});
+</script>
+
+</body>
+</html>
