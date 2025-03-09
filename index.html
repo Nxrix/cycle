@@ -117,6 +117,7 @@ body {
   <!--div class="other">Nxrix</div-->
 </body>
 <script src="/assets/js/screen.js"></script>
+<script src="/assets/js/storage.js"></script>
 <script src="./tiles.js"></script>
 <script>
 
@@ -304,7 +305,7 @@ const lose = () => {
   tm--;
   if (tm>(-lvls.length)) {
     unlock=tm-1;
-    localStorage.setItem("unlock",unlock);
+    storage.set("unlock",unlock);
   }
   next();
 }
@@ -313,7 +314,7 @@ const win = () => {
   tm++;
   if (tm>(-lvls.length)) {
     unlock=tm-1;
-    localStorage.setItem("unlock",unlock);
+    storage.set("unlock",unlock);
   }
   next();
 }
@@ -322,7 +323,7 @@ const setL = (n) => {
   tm=n;
   if (tm>(-lvls.length)) {
     unlock=tm-1;
-    localStorage.setItem("unlock",unlock);
+    storage.set("unlock",unlock);
   }
   next();
 }
@@ -346,22 +347,25 @@ const shift_tile_r = (x,y,n) => {
 
 const theme = () => {
   invert = 1-invert;
-  localStorage.setItem("invert",invert);
+  storage.set("invert",invert);
   const rnd = new srnd(tm*tm*tm*tm+33);
   const inv = Math.round(rnd.gen())==0;
   document.body.style.filter = (invert?"invert(100%)":"invert(0%)")+" hue-rotate("+(rnd.gen()*360+hue_offset+invert*180)+"deg)";
 }
 
-let unlock = localStorage.getItem("unlock")||(-1-lvls.length);
-let invert = +localStorage.getItem("invert");
+const storage = new Storage("nxrix","cycle");
+let unlock = (-1-lvls.length);
+let invert = +storage.get("invert");
 let tm = +unlock+1;
 let locked = false;
 let dev = 0;
 let hue_offset = 200;
-next();
-window.onload = () => {
+window.onload = async () => {
+  await storage.init();
+  unlock = await storage.get("unlock");
+  unlock = unlock||(-1-lvls.length);
+  next();
   document.body.style.opacity = "1";
-}
-
+};
 </script>
 </html>
